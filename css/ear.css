@@ -1,0 +1,279 @@
+/* ear.css — раздел «Слух»: задание квиза, варианты ответа сеткой, ноты мелодии кружками, серия, «отвечать
+   гитарой», перекличка (уровень, чистые повторы). Только токены «Графита». */
+
+.ear-task {
+  gap: var(--sp-3);
+}
+
+.ear-prompt {
+  min-height: 1.5em;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-medium);
+}
+
+/* «F♯ — фа-диез»: что искать */
+.ear-big {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+}
+
+.ear-big b {
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-heavy);
+  line-height: 1.1;
+}
+
+.ear-big span {
+  color: var(--muted);
+}
+
+/* варианты ответа: крупные кнопки сеткой, по 3–4 в ряд */
+.ear-answers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+  gap: var(--sp-2);
+}
+
+.ear-answers .opt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 56px;
+  padding: var(--sp-2);
+  border: 0;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  transition: background var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
+}
+
+.ear-answers .opt b {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+}
+
+.ear-answers .opt small {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.ear-answers .opt.right {
+  background: color-mix(in srgb, var(--ok) 28%, var(--surface-2));
+  box-shadow: inset 0 0 0 2px var(--ok);
+}
+
+.ear-answers .opt.wrong {
+  background: color-mix(in srgb, var(--bad) 22%, var(--surface-2));
+  box-shadow: inset 0 0 0 2px var(--bad);
+}
+
+.ear-answers .opt.playing {
+  box-shadow: inset 0 0 0 2px var(--text);
+}
+
+.ear-explain {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+/* ноты мелодии: кружки по порядку */
+.ear-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ear-dots li {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 var(--sp-2);
+  border-radius: 22px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-weight: var(--fw-bold);
+  transition: background var(--t-fast) var(--ease), transform var(--t-fast) var(--ease);
+}
+
+.ear-dots li.now {
+  color: var(--text);
+  box-shadow: inset 0 0 0 2px var(--text);
+}
+
+.ear-dots li.playing {
+  background: var(--surface-3);
+  color: var(--text);
+  transform: scale(1.08);
+}
+
+.ear-dots li.ok {
+  background: color-mix(in srgb, var(--ok) 30%, var(--surface-2));
+  color: var(--text);
+}
+
+.ear-dots li.bad {
+  box-shadow: inset 0 0 0 2px var(--bad);
+  color: var(--text);
+}
+
+/* серия правильных ответов */
+.streak {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.streak svg {
+  color: var(--ok);
+}
+
+.streak-cur {
+  color: var(--text);
+  font-size: var(--fs-lg);
+  font-variant-numeric: tabular-nums;
+}
+
+.streak.record .streak-best {
+  color: var(--ok);
+  font-weight: var(--fw-bold);
+}
+
+/* отвечать гитарой */
+.guitar-answer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.guitar-answer .btn {
+  align-self: flex-start;
+}
+
+.guitar-answer .btn.on {
+  background: color-mix(in srgb, var(--ok) 22%, var(--surface-2));
+  box-shadow: inset 0 0 0 2px var(--ok);
+}
+
+.guitar-answer .heard {
+  font-size: var(--fs-sm);
+}
+
+.ear-more {
+  padding: 0 var(--sp-1);
+}
+
+.ear-more[open] summary {
+  margin-bottom: var(--sp-1);
+}
+
+.muted-card p {
+  color: var(--muted);
+}
+
+.muted-card p b {
+  color: var(--text);
+}
+
+.dial-wrap.small .dial {
+  max-width: 260px;
+}
+
+.ear-reveal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.ear-reveal[hidden],
+.dial-wrap[hidden] {
+  display: none;
+}
+
+/* «Собрать аккорд»: 12 нот кнопками (то же, что на круге, — для клавиатуры и диктора) */
+.pc-toggles .chip-btn {
+  min-width: 48px;
+}
+
+.pc-toggles .chip-btn[aria-pressed="true"] {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+/* курсор ответа на грифе: верно — зелёное кольцо, неверно — красное */
+.fb-cursor circle.cur-ok {
+  stroke: var(--ok);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--ok) 70%, transparent));
+}
+
+.fb-cursor circle.cur-bad {
+  stroke: var(--bad);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--bad) 70%, transparent));
+}
+
+/* ---------- перекличка ---------- */
+.cb-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.cb-level {
+  font-size: var(--fs-md);
+}
+
+.cb-clean {
+  display: inline-flex;
+  gap: 6px;
+  padding-top: 6px;
+}
+
+.cb-clean i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 2px var(--line);
+}
+
+.cb-clean i.on {
+  background: var(--ok);
+  box-shadow: none;
+}
+
+.cb-status {
+  font-size: var(--fs-lg);
+}
+
+.cb-opts {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.setting-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+.ear-nav .btn-primary {
+  flex: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ear-dots li.playing {
+    transform: none;
+  }
+}

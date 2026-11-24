@@ -1,0 +1,27 @@
+{
+  "name": "Лад — тренер для электрогитары",
+  "short_name": "Лад",
+  "description": "Занятие на сегодня, теория на грифе, ритм, слух, импровизация и свои риффы.",
+  "lang": "ru",
+  "dir": "ltr",
+  "id": "./",
+  "start_url": "./#/today",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0f1012",
+  "theme_color": "#0f1012",
+  "categories": ["music", "education"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ],
+  "shortcuts": [
+    { "name": "Сегодня", "short_name": "Сегодня", "url": "./#/today", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }] },
+    { "name": "Тюнер", "short_name": "Тюнер", "url": "./#/play/tuner", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }] },
+    { "name": "Метроном", "short_name": "Метроном", "url": "./#/play/metronome", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }] },
+    { "name": "Риффы", "short_name": "Риффы", "url": "./#/play/riffs", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }] }
+  ]
+}

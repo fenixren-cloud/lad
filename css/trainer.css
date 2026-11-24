@@ -1,0 +1,108 @@
+/* trainer.css — «Тренер»: серия дней, учебная дорожка, повторения, журнал, графики, карта грифа. */
+
+/* ---------- общее ---------- */
+.stats3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-2); text-align: center; }
+.stats3 b { display: block; font-size: var(--fs-xl); }
+.stats3 span { font-size: var(--fs-xs); }
+.meter { height: 8px; border-radius: var(--r-pill); background: var(--surface-2); overflow: hidden; margin: var(--sp-2) 0; }
+.meter > span { display: block; height: 100%; background: var(--text); border-radius: inherit; min-width: 2px; }
+.plain-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-2); }
+.plain-list.pad { padding: var(--sp-3) var(--sp-4) var(--sp-4); }
+.offer { border-color: var(--text); }
+.offer .row { flex-wrap: wrap; gap: var(--sp-2); }
+
+/* ---------- серия дней ---------- */
+.streak-head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--sp-4); }
+.streak-card .big { font-size: var(--fs-2xl); }
+.week { display: flex; align-items: flex-end; gap: 6px; height: 48px; }
+.wbar { width: 14px; height: 100%; border-radius: 4px; background: var(--surface-2); position: relative; overflow: hidden; }
+.wbar::after { content: ""; position: absolute; inset: auto 0 0; height: var(--h); background: var(--muted); border-radius: 4px; }
+.wbar.now::after { background: var(--text); }
+
+/* ---------- дорожка ---------- */
+.path { display: grid; gap: var(--sp-3); }
+.unit.locked { opacity: 0.72; }
+.unit-head { display: grid; grid-template-columns: auto 1fr auto; gap: var(--sp-3); align-items: start; }
+.unit-head .card-title { margin: 0; }
+.unit-head p { margin: 2px 0 0; }
+.unit-num { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); font-weight: var(--fw-bold); }
+.unit.full .unit-num { background: var(--ok); color: var(--on-primary); }
+.path-items { list-style: none; margin: var(--sp-3) 0 0; padding: 0; display: grid; gap: 2px; }
+.path-items li { display: flex; align-items: center; gap: var(--sp-2); }
+.path-row { flex: 1; display: grid; grid-template-columns: 24px 1fr auto; gap: var(--sp-3); align-items: center; min-height: var(--tap); padding: var(--sp-2) var(--sp-1); border-radius: var(--r-sm); color: inherit; text-decoration: none; }
+a.path-row:hover { background: var(--surface-2); }
+.path-row.next { background: var(--surface-2); }
+div.path-row { grid-template-columns: 24px 1fr; }
+.path-mark { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; }
+.path-mark.done { background: var(--ok); border-color: var(--ok); color: var(--on-primary); }
+.path-mark.now { border-color: var(--text); }
+.path-items li.done .row-text b { color: var(--muted); }
+.goal { display: block; font-size: var(--fs-xs); color: var(--muted); margin-top: 2px; }
+.goal.ok { color: var(--ok); }
+.self-done { min-height: var(--tap); white-space: nowrap; }
+.self-done.on { color: var(--ok); }
+
+/* ---------- повторения ---------- */
+.review-chip { font-size: var(--fs-sm); margin-bottom: var(--sp-2); }
+.review-prompt { font-size: var(--fs-lg); font-weight: var(--fw-medium); margin: 0 0 var(--sp-3); }
+.review-feedback { margin-top: var(--sp-3); padding: var(--sp-3); border-radius: var(--r-md); background: var(--surface-2); }
+.review-feedback p { margin: 0 0 var(--sp-2); }
+.review-feedback p:last-child { margin-bottom: 0; }
+.review-feedback .ok b { color: var(--ok); }
+.review-feedback .bad b { color: var(--bad); }
+.review-done { text-align: center; display: grid; gap: var(--sp-2); justify-items: center; }
+.review-done .btn { width: 100%; }
+.review .ear-answers .opt b { font-size: var(--fs-md); }
+.fb-mark.answer circle { stroke: var(--ok); stroke-width: 3; }
+
+/* ---------- журнал ---------- */
+.journal { list-style: none; margin: 0; padding: 0; }
+.jday { padding: var(--sp-3) var(--sp-4); border-top: 1px solid var(--line); }
+.jday:first-child { border-top: 0; }
+.jday-head { display: flex; justify-content: space-between; gap: var(--sp-2); }
+.jday p { margin: 4px 0 0; }
+.journal-screen .flush > .btn { margin: var(--sp-3) var(--sp-4) var(--sp-4); width: calc(100% - 2 * var(--sp-4)); }
+
+/* ---------- графики ---------- */
+.chart-wrap { margin: var(--sp-2) 0 0; }
+.chart-box { position: relative; }
+.chart { width: 100%; height: auto; display: block; overflow: visible; }
+.chart .grid { stroke: var(--line); stroke-width: 1; }
+.chart .grid.zero { stroke: var(--muted); }
+.chart .tick { fill: var(--muted); font: 500 11px var(--font); }
+.chart .tick.label { fill: var(--text); }
+.chart .line { fill: none; stroke: var(--text); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.chart .line.dashed { stroke: var(--muted); stroke-dasharray: 5 4; }
+.chart .dot { fill: var(--text); stroke: var(--surface); stroke-width: 2; }
+.chart .dot.dashed { fill: var(--muted); }
+.chart .hit { fill: transparent; cursor: pointer; }
+.chart .hit:focus-visible { fill: rgba(127, 127, 127, 0.2); outline: none; }
+.chart-tip { position: absolute; top: 0; right: 0; background: var(--surface-3); color: var(--text); padding: 4px 8px; border-radius: var(--r-sm); font-size: var(--fs-xs); pointer-events: none; }
+.chart-legend { display: flex; gap: var(--sp-4); margin: 0 0 var(--sp-1); }
+.chart-legend .key::before { content: ""; display: inline-block; width: 18px; height: 0; border-top: 2px solid var(--text); vertical-align: middle; margin-right: 6px; }
+.chart-legend .key.dashed::before { border-top: 2px dashed var(--muted); }
+.chart-table summary { min-height: var(--tap); display: flex; align-items: center; cursor: pointer; color: var(--muted); font-size: var(--fs-sm); }
+.chart-table table, .quiz-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.chart-table th, .chart-table td, .quiz-table th, .quiz-table td { text-align: left; padding: 6px 4px; border-top: 1px solid var(--line); }
+.quiz-table { margin-top: var(--sp-3); }
+.charts .setting { display: grid; gap: var(--sp-1); margin-bottom: var(--sp-2); }
+
+/* ---------- карта грифа ---------- */
+.fb-mark.lv-1 circle { fill: var(--surface-3); stroke: var(--text); stroke-width: 2; }
+.fb-mark.lv-1 text { fill: var(--text); }
+.fb-mark.lv-3 circle { fill: #34d399; } /* гриф тёмный в обеих темах */
+.map-legend { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+.map-legend .lv::before { content: ""; display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; background: var(--deg-other); }
+.map-legend .lv-0::before { opacity: 0.3; }
+.map-legend .lv-1::before { background: var(--surface-3); box-shadow: inset 0 0 0 2px var(--text); }
+.map-legend .lv-3::before { background: var(--ok); }
+
+/* ---------- перенос ---------- */
+.check-row { display: flex; align-items: center; gap: var(--sp-3); min-height: var(--tap); cursor: pointer; }
+.check-row input { appearance: none; -webkit-appearance: none; width: var(--tap); height: var(--tap); margin: 0; flex: none; position: relative; cursor: pointer; border-radius: var(--r-sm); background: transparent; }
+.check-row input::before { content: ""; position: absolute; inset: 11px; border: 2px solid var(--text); border-radius: 6px; }
+.check-row input:checked::before { background: var(--text); box-shadow: inset 0 0 0 3px var(--surface); }
+.check-row input:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+
+/* заголовок карточки без внутренних полей (списки во всю ширину) */
+.journal-screen .card.flush > .card-title, .neckmap .card.flush > .card-title { padding: var(--sp-3) var(--sp-4) 0; }

@@ -1,0 +1,136 @@
+/* tokens.css — дизайн-токены «Графита» в одном месте: цвета, шрифт, размеры, отступы, радиусы, тени, движение.
+   Тема задаётся атрибутом <html data-theme="dark|light">; «авто» выставляет его по системе (app/theme.js).
+   Цвета ступеней — договорённые и одинаковые везде; гриф тёмный в обеих темах (как настоящая накладка),
+   поэтому ступени на нём различимы и днём. Контраст проверяет tests/unit/tokens.test.mjs. */
+
+@font-face {
+  font-family: "Onest";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(../fonts/onest-cyrillic.woff2) format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+  font-family: "Onest";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(../fonts/onest-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  /* ступени — не менять без вопроса автору */
+  --deg-root: #f5a524;
+  --deg-third: #9d8cff;
+  --deg-fifth: #38bdf8;
+  --deg-seventh: #f43f5e;
+  --deg-char: #a3e635;
+  --deg-other: #e9e6df;
+  --on-deg: #0d0e10;
+
+  /* гриф — тёмный в обеих темах */
+  --neck: #15161a;
+  --neck-fret: #3a3d45;
+  --neck-string: #d6d3cc;
+  --neck-inlay: #2a2c32;
+  --neck-ruler: rgba(241, 239, 233, 0.16);
+  --neck-ruler-short: rgba(241, 239, 233, 0.08);
+  --neck-label: #8c9099;
+
+  /* шрифт: Onest; ♭ и ♯ берутся из системного шрифта */
+  --font: "Onest", system-ui, -apple-system, "Segoe UI", "Segoe UI Symbol", Roboto, "Noto Sans", "Noto Sans Symbols 2", sans-serif;
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.8125rem;
+  --fs-md: 0.9375rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.5rem;
+  --fs-2xl: 1.875rem;
+  --fs-num: 6.5rem; /* главные числа: темп, нота в тюнере, таймер */
+  --fw-regular: 450;
+  --fw-medium: 550;
+  --fw-bold: 700;
+  --fw-heavy: 760;
+  --lh: 1.5;
+
+  /* отступы: шаг 4 px */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+
+  /* размеры */
+  --tap: 44px; /* минимальная зона нажатия */
+  --btn-h: 56px; /* главная кнопка */
+  --tabbar-h: 68px;
+  --mini-h: 56px;
+  --sidebar-w: 248px;
+  --content-max: 720px;
+
+  /* радиусы */
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-pill: 999px;
+
+  /* движение */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --t-fast: 120ms;
+  --t-med: 220ms;
+  --t-slow: 420ms;
+}
+
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0f1012;
+  --bg-elev: #131417;
+  --surface: #18191d;
+  --surface-2: #212328;
+  --surface-3: #2a2c32;
+  --line: #2a2d33;
+  --text: #f1efe9;
+  --muted: #9a9ea7;
+  --primary: #f1efe9;
+  --on-primary: #101113;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --bad: #fb7185;
+  --focus: #f1efe9;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --deg-ring: transparent;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f3ef;
+  --bg-elev: #fbfaf7;
+  --surface: #ffffff;
+  --surface-2: #ebe9e3;
+  --surface-3: #dedbd3;
+  --line: #d9d6ce;
+  --text: #17181b;
+  --muted: #5b5e66;
+  --primary: #17181b;
+  --on-primary: #f4f3ef;
+  --ok: #047857;
+  --warn: #92400e;
+  --bad: #be123c;
+  --focus: #17181b;
+  --shadow: 0 10px 30px rgba(23, 24, 27, 0.12);
+  --deg-ring: rgba(13, 14, 16, 0.45); /* обводка цветных значков на светлом фоне */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --t-fast: 0ms;
+    --t-med: 0ms;
+    --t-slow: 0ms;
+  }
+}
