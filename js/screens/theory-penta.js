@@ -6,7 +6,7 @@ import { screenHeader, card, segmented } from '../ui/components.js';
 import { signal, disposer } from '../core/signal.js';
 import { mod12, noteName } from '../core/notes.js';
 import { keyTonic, PENTATONICS, spellPenta } from '../core/scales.js';
-import { TUNINGS, pentaPositions } from '../core/neck.js';
+import { TUNINGS, MAX_FRET, pentaPositions, neckNotes } from '../core/neck.js';
 import { pentaTable, pentaLabelMap, markersFor, blueNotes, upAndDown } from '../core/theory.js';
 import { settings } from '../app/state.js';
 import { store } from '../app/store.js';
@@ -39,10 +39,11 @@ export function render(r) {
     const all = pentaPositions(root, kind, t), map = pentaLabelMap(root, kind, g, blue), labels = /** @type {any} */ (settings.value.labels);
     notesLine.textContent = `${noteName(tonic, { german: g })} ${kind === 'minor' ? 'минорная' : 'мажорная'}: ${spellPenta(tonic, kind).map(n => noteName(n, { german: g })).join(' ')}${blue ? ` + блюзовая нота` : ''}. Шаги: ${PENTATONICS[kind].steps.join('-')}.`;
     if (pos === 'all') {
-      const seen = new Set(), notes = [];
-      for (const p of all) for (const n of p.notes) { const k = `${n.string}:${n.fret}`; if (!seen.has(k)) { seen.add(k); notes.push(n); } }
-      const blues = blue ? all.flatMap(p => blueNotes(root, kind, p)).filter(b => !seen.has(`${b.string}:${b.fret}`)) : [];
-      neck.show({ from: 0, to: 22, markers: [...markersFor(notes, map, { labels }), ...markersFor(blues, map, { labels, ring: () => true })], focus: all[0].minFret });
+      // весь гриф от порожка: пять позиций повторяются через 12 ладов, поэтому показываем каждую ноту гаммы
+      // на каждом ладу 0–22 (в Drop D у порожка открытая 6-я — тоника ре минора)
+      const notes = neckNotes(PENTATONICS[kind].st.map(x => root + x), t, 0, MAX_FRET);
+      const blues = blue ? neckNotes([root + PENTATONICS[kind].blueSt], t, 0, MAX_FRET) : [];
+      neck.show({ from: 0, to: MAX_FRET, markers: [...markersFor(notes, map, { labels }), ...markersFor(blues, map, { labels, ring: () => true })], focus: 0 });
     } else {
       const i = Number(pos), p = all[i], nx = all[(i + 1) % 5];
       const own = new Set(p.notes.map(n => `${n.string}:${n.fret}`));
@@ -89,7 +90,7 @@ export function render(r) {
 
   const el = h('div', { class: 'screen theory th-penta' },
     screenHeader({ eyebrow: 'Теория', title: 'Пентатоника', back: '#/theory' }),
-    h('p', { class: 'lead' }, 'Пять нот, пять позиций. Каждая позиция — 2 ноты на струне: линейка длинная (3 лада) или короткая (2 лада). Выучил фигуру линейками — играешь её в любой тональности.'),
+    h('p', { class: 'lead' }, 'Пять нот, пять позиций. Каждая позиция — 2 ноты на струне: линейка длинная (3 лада) или короткая (2 лада). Выучишь фигуру линейками — сыграешь её в любой тональности.'),
     kindSeg,
     h('div', { class: 'setting' }, h('b', null, 'Тоника'), roots.el),
     quickSettings(),

@@ -100,6 +100,7 @@ export function mountShell(root) {
     document.title = `${view.title || APP_NAME} · ${APP_NAME}`;
     // фокус на заголовок — экранный диктор сразу говорит, куда пришли
     if (document.activeElement && document.activeElement !== document.body) /** @type {HTMLElement | null} */ (main.querySelector('h1'))?.focus({ preventScroll: true });
+    document.documentElement.dataset.screen = r.path; // какой экран сейчас на месте (для проверок)
     document.dispatchEvent(new CustomEvent('lad:screen', { detail: r.path }));
   });
   return { main, banner };

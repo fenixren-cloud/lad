@@ -80,6 +80,34 @@ export function isClean(expected, taps, { tolMs = 40, latency = 0 } = {}) {
   return { clean, ...r };
 }
 
+/**
+ * Ожидаемые моменты ударов теста ритма — от настоящих времён кликов, а не от «темп × номер доли»:
+ * так итог верен, даже если темп часов отличается от выбранного или такт начался позже.
+ * @param {{ expected: number[] }[]} plan план по тактам (доли от начала такта, 0…4)
+ * @param {number[][]} beatTimes beatTimes[такт][доля] — время клика по часам звука; первые countBars тактов — отсчёт
+ * @param {number} countBars сколько тактов отсчёта перед тестом
+ * @param {number} fallbackBeat длительность доли, если соседнего клика нет (последняя доля), с
+ */
+export function expectedTimes(plan, beatTimes, countBars = 1, fallbackBeat = 0.5) {
+  // длительность доли — медиана разниц соседних кликов (если есть)
+  const diffs = [];
+  for (const bar of beatTimes) for (let k = 1; bar && k < bar.length; k++) if (bar[k] != null && bar[k - 1] != null) diffs.push(bar[k] - bar[k - 1]);
+  diffs.sort((a, b) => a - b);
+  const beat = diffs.length ? diffs[diffs.length >> 1] : fallbackBeat;
+  const out = [];
+  plan.forEach((b, i) => {
+    const bar = beatTimes[i + countBars];
+    if (!bar || bar[0] == null) return; // такт не прозвучал — не ждём ударов
+    for (const p of b.expected) {
+      const k = Math.floor(p), frac = p - k;
+      const t0 = bar[k] ?? bar[0] + k * beat;
+      const t1 = bar[k + 1] ?? beatTimes[i + countBars + 1]?.[0] ?? t0 + beat;
+      out.push(t0 + frac * (t1 - t0));
+    }
+  });
+  return out;
+}
+
 // ---------- ритмические фигуры для теста ритма (на долю) ----------
 /** q — четверть, ee — две восьмые, r — пауза, re — пауза + восьмая, er — восьмая + пауза, tr — триоль */
 export const FIGURES = Object.freeze({ q: [0], ee: [0, 0.5], r: [], re: [0.5], er: [0], tr: [0, 1 / 3, 2 / 3] });

@@ -6,7 +6,7 @@ import { h } from '../ui/dom.js';
 import { screenHeader, segmented, card, button } from '../ui/components.js';
 import { createMicPanel } from '../ui/mic-panel.js';
 import { signal, disposer } from '../core/signal.js';
-import { RHYTHM_MODES, rhythmPlan, analyzeTaps, tapsInWindow, calibrate } from '../core/rhythm.js';
+import { RHYTHM_MODES, rhythmPlan, analyzeTaps, tapsInWindow, calibrate, expectedTimes } from '../core/rhythm.js';
 import { clampBpm } from '../core/tempo.js';
 import { unlockAudio } from '../audio/engine.js';
 import { join, leave } from '../audio/hub.js';
@@ -14,6 +14,8 @@ import { playVoice } from '../audio/percussion.js';
 import { heardAt, micLatencyGuess } from '../audio/latency.js';
 import { stop as stopMetronome } from '../audio/metronome.js';
 import { store } from '../app/store.js';
+import { nowPlaying } from '../app/state.js';
+import { stopDrone, stopExample } from '../audio/theoryplayer.js';
 import { stepBar } from './step.js';
 
 const FIG_TEXT = { q: '♩', ee: '♫', r: '𝄽', re: '𝄾♪', er: '♪𝄾', tr: '3' };
@@ -48,8 +50,9 @@ export function render(r) {
   const result = h('div', { class: 'rresult', hidden: true });
   const hist = h('div', { class: 'list' });
 
-  /** @type {{ taps: number[], expected: number[], barTimes: number[], startBar: number, plan: any[], calibrating: boolean, micInfo: any }} */
-  const run = { taps: [], expected: [], barTimes: [], startBar: 0, plan: [], calibrating: false, micInfo: null };
+  /** beatTimes[такт][доля] — когда клик звучал на самом деле (по часам звука): ожидаемые удары считаются от них */
+  /** @type {{ taps: number[], beatTimes: number[][], startBar: number, plan: any[], calibrating: boolean, micInfo: any, ending: boolean }} */
+  const run = { taps: [], beatTimes: [], startBar: 0, plan: [], calibrating: false, micInfo: null, ending: false };
   let ctx = null, bus = null, endTimer = 0;
 
   const mic = createMicPanel({
@@ -72,9 +75,17 @@ export function render(r) {
       const bar = e.bar - run.startBar;
       if (bar < 0 || e.late) continue;
       const testBar = bar - countBars;
-      if (testBar >= run.plan.length) continue;
+      if (testBar >= run.plan.length) {
+        // такт после последнего: итог — как только отзвучит последняя доля (по часам звука, а не таймером)
+        if (e.sub === 0 && e.beat === 0 && !run.ending) {
+          run.ending = true;
+          clearTimeout(endTimer);
+          endTimer = setTimeout(finish, Math.max(0, (e.time - heardAt(ctx, performance.now())) * 1000) + 350);
+        }
+        continue;
+      }
       if (e.sub === 0) {
-        if (e.beat === 0 && testBar >= 0) run.barTimes[testBar] = e.time;
+        (run.beatTimes[bar] ||= [])[e.beat] = e.time;
         const clicks = testBar < 0 ? [0, 1, 2, 3] : run.plan[testBar].clicks;
         if (clicks.includes(e.beat)) playVoice(ctx, bus, e.beat === 0 ? 'accent' : 'beat', 'click', e.time, 1, o.input === 'mic');
         // подсветка — в момент, когда клик слышно (а не когда он запланирован)
@@ -99,9 +110,13 @@ export function render(r) {
     ctx = a.ctx;
     if (!bus) { bus = ctx.createGain(); bus.connect(a.master); }
     if (opt.value.input === 'mic' && !mic.running.value) { await mic.start(); if (!mic.running.value) return; }
+    // тест идёт один: метроном, подложка, рифф, бурдон и примеры замолкают — иначе тест встал бы в их сетку и темп
     stopMetronome();
+    nowPlaying.value?.stop();
+    stopDrone();
+    stopExample();
     leave('rhythm');
-    run.taps = []; run.barTimes = []; run.calibrating = calibrating;
+    run.taps = []; run.beatTimes = []; run.ending = false; run.calibrating = calibrating;
     run.plan = calibrating ? rhythmPlan('quarters', 2) : rhythmPlan(opt.value.mode, opt.value.bars);
     result.hidden = true;
     state.value = 'count';
@@ -109,17 +124,18 @@ export function render(r) {
     const j = join('rhythm', onTicks, { bpm: opt.value.bpm, beatsPerBar: 4 });
     if (!j) return;
     run.startBar = j.startBar;
-    const total = ((run.plan.length + 1) * 4 * 60) / opt.value.bpm;
+    // запасной таймер: если часы звука не дошли до конца (вкладку свернули) — итог всё равно будет
+    const total = ((run.plan.length + 2) * 4 * 60) / opt.value.bpm;
     clearTimeout(endTimer);
-    endTimer = setTimeout(finish, (total + 0.8) * 1000);
+    endTimer = setTimeout(finish, (total + 1.5) * 1000);
   }
 
   function finish() {
     leave('rhythm');
     dots.querySelectorAll('i').forEach(x => x.classList.remove('on'));
     figureRow.hidden = true;
-    const beat = 60 / opt.value.bpm;
-    const expected = run.plan.flatMap((b, i) => (run.barTimes[i] == null ? [] : b.expected.map(p => run.barTimes[i] + p * beat)));
+    if (state.value === 'done' || state.value === 'idle') return;
+    const expected = expectedTimes(run.plan, run.beatTimes, 1, 60 / opt.value.bpm);
     const lat = run.calibrating ? 0 : latency();
     const taps = tapsInWindow(expected, run.taps.map(t => t - lat));
     state.value = 'done';
